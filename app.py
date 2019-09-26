@@ -5,15 +5,22 @@ from threading import Thread, Event
 # operators[0] are 'easy' operators, operators[1] are 'hard'
 operators = [['+', '-'], ['*', '/']]
 
+TIME = 240
+
 # Event object used to send stop signals between threads
 stop_event = Event()
 
 # Event object used to send restart signal between threads
 # restart_event = Event()
 
-def save_run(file):
+def save_run(filename, data):
     # function for saving performance data
-    return 0
+    # data should be a tuple (problems, minutes, score)
+    storage_string = ','.join([str(d) for d in list(data)])
+    f = open(filename, "a+")
+    f.write(storage_string + '\n')
+    f.close()
+    return
 
 def simulate(problems = 40):
     points = 0
@@ -62,6 +69,9 @@ def simulate(problems = 40):
     print('\ntest complete. you scored ' + str(points) + ' out of ' + str(problems))
     print('Incorrect Answers:')
     [print(problem) for problem in incorrect]
+    # save performance data
+    save_data = (problems, TIME, points)
+    save_run('log.csv', save_data)
 
 
 def main():
@@ -71,7 +81,7 @@ def main():
     while alive:
         action_thread = Thread(target=simulate)
         action_thread.start()
-        action_thread.join(timeout=8)
+        action_thread.join(timeout=TIME)
         if action_thread.is_alive():
             stop_event.set()
             action_thread.join()
