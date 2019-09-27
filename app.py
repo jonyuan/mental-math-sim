@@ -35,8 +35,8 @@ def simulate(problems = 40):
         mode = random.randint(0, 1)
         operator = operators[mode][random.randint(0, 1)]
         if mode == 0:
-            a = round(random.normalvariate(0,200), 2)
-            b = round(random.normalvariate(0,200), 2)
+            a = round(random.normalvariate(0,50), random.randint(1, 2))
+            b = round(random.normalvariate(0,50), random.randint(1, 2))
             if operator == '+':
                 actual_ans = a + b
             elif operator == '-':
@@ -46,9 +46,9 @@ def simulate(problems = 40):
             actual_ans = round(actual_ans, 2)
         else:
             # when multiplying or dividing, come up with an integer solution first
-            actual_ans = random.randint(-50, 50)
+            actual_ans = random.randint(-20, 20)
             a = random.randint(-50, 50)
-            b = round(random.normalvariate(0, 100), 1)
+            b = round(random.normalvariate(0, 5), 1)
             if operator == '*':
                 actual_ans = a * b
                 actual_ans = round(actual_ans, 2)
@@ -58,7 +58,11 @@ def simulate(problems = 40):
         question = str(a) + ' ' + operator + ' ' + str(b)
         formatted_question = str(i) + ') ' + question + ' = '
         ans = input(formatted_question)
-        if ans == str(actual_ans):
+        try:
+            float_ans = float(ans)
+        except ValueError:
+            float_ans = actual_ans + 1 # will be incorrect
+        if abs(float_ans - actual_ans) < 0.0001:
             # print('good job dude')
             points += 1
             continue
