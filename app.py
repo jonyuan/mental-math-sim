@@ -1,6 +1,7 @@
 import numpy as np
 import random
 from threading import Thread, Event
+import argparse
 
 # operators[0] are 'easy' operators, operators[1] are 'hard'
 operators = [['+', '-'], ['*', '/']]
@@ -22,7 +23,7 @@ def save_run(filename, data):
     f.close()
     return
 
-def simulate(problems = 40):
+def simulate(problems = 40, mode = None):
     points = 0
     incorrect = []
     for i in range(1, problems + 1):
@@ -32,7 +33,10 @@ def simulate(problems = 40):
             break
 
         # we want to make addition and subtraction a little harder than * and /
-        mode = random.randint(0, 1)
+        if mode is None:
+            mode = random.randint(0, 1)
+        else:
+            mode = 0
         operator = operators[mode][random.randint(0, 1)]
         if mode == 0:
             a = round(random.normalvariate(0,50), random.randint(1, 2))
@@ -79,11 +83,16 @@ def simulate(problems = 40):
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Practice your mental math.')
+    parser.add_argument('--easy', action='store_true', help='only practice addition and subtraction')
+
+    args = parser.parse_args()
+
     print('40 questions, 4 minutes...')
     alive = True
     # simulate(problems = 4)
     while alive:
-        action_thread = Thread(target=simulate)
+        action_thread = Thread(target=simulate, kwargs = dict(mode='easy'))
         action_thread.start()
         action_thread.join(timeout=TIME)
         if action_thread.is_alive():
